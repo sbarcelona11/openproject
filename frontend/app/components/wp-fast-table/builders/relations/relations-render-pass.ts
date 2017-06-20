@@ -1,4 +1,4 @@
-import {PrimaryRenderPass, RenderedRow} from '../primary-render-pass';
+import {PrimaryRenderPass, RowRenderInfo} from '../primary-render-pass';
 import {WorkPackageTable} from '../../wp-fast-table';
 import {
   RelationColumnType,
@@ -12,7 +12,7 @@ import {WorkPackageEditForm} from '../../../wp-edit-form/work-package-edit-form'
 import {WorkPackageResourceInterface} from '../../../api/api-v3/hal-resources/work-package-resource.service';
 import {RelationResource} from '../../../api/api-v3/hal-resources/relation-resource.service';
 
-export interface RelationRenderInfo extends RenderedRow {
+export interface RelationRenderInfo extends RowRenderInfo {
   data:{
     relation:RelationResource;
     columnId:string;
@@ -41,7 +41,7 @@ export class RelationsRenderPass {
 
     // Render for each original row, clone it since we're modifying the tablepass
     const rendered = _.clone(this.tablePass.renderedOrder);
-    rendered.forEach((row:RenderedRow, position:number) => {
+    rendered.forEach((row:RowRenderInfo, position:number) => {
 
       // We only care for rows that are natural work packages
       if (!row.workPackage) {

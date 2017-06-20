@@ -8,7 +8,6 @@ import {HalResource} from '../../../../api/api-v3/hal-resources/hal-resource.ser
 import {groupClassNameFor, GroupHeaderBuilder} from './group-header-builder';
 import {groupByProperty, groupedRowClassName} from './grouped-rows-helpers';
 import {PlainRenderPass} from '../plain/plain-render-pass';
-import {RenderedRow} from '../../primary-render-pass';
 
 export class GroupedRenderPass extends PlainRenderPass {
   constructor(public workPackageTable:WorkPackageTable,
@@ -83,23 +82,6 @@ export class GroupedRenderPass extends PlainRenderPass {
       group.href,
       (a, b) => joinedOrderedHrefs(a) === joinedOrderedHrefs(b)
     );
-  }
-
-  public augmentSecondaryElement(row:HTMLElement, rendered:RenderedRow):HTMLElement {
-    if (!rendered.belongsTo) {
-      return row;
-    }
-
-    const wpRow = this.workPackageTable.rowIndex[rendered.belongsTo.id];
-    const group = wpRow.group;
-
-    if (!group) {
-      return row;
-    }
-
-    row.classList.add(groupedRowClassName(group.index as number));
-
-    return row;
   }
 
   /**

@@ -38,7 +38,6 @@ import {
 import {WorkPackageTimelineTableController} from '../container/wp-timeline-container.directive';
 import {timelineElementCssClass, TimelineViewParameters} from '../wp-timeline';
 import {TimelineRelationElement, workPackagePrefix} from './timeline-relation-element';
-import {RenderedRow} from '../../../wp-fast-table/builders/primary-render-pass';
 import Moment = moment.Moment;
 import {WorkPackageTimelineCell} from '../cells/wp-timeline-cell';
 
@@ -119,7 +118,7 @@ export class WorkPackageTableTimelineRelations {
       .map(([rendered, visible]) => rendered)
       .subscribe(list => {
         // ... make sure that the corresponding relations are loaded ...
-        const wps = _.compact(list.map(row => row.workPackage && row.workPackage.id) as string[]);
+        const wps = _.compact(list.map(row => row.workPackageId) as string[]);
         this.wpRelations.requireInvolved(wps);
 
         wps.forEach(wpId => {

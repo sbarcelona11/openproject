@@ -15,7 +15,7 @@ import {GroupedRowsBuilder} from './builders/modes/grouped/grouped-rows-builder'
 import {HierarchyRowsBuilder} from './builders/modes/hierarchy/hierarchy-rows-builder';
 import {RowsBuilder} from './builders/modes/rows-builder';
 import {WorkPackageTimelineTableController} from '../wp-table/timeline/container/wp-timeline-container.directive';
-import {PrimaryRenderPass, RenderedRow} from './builders/primary-render-pass';
+import {PrimaryRenderPass} from './builders/primary-render-pass';
 import {debugLog} from '../../helpers/debug_output';
 
 export class WorkPackageTable {

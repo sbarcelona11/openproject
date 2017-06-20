@@ -66,7 +66,7 @@ export class HierarchyTransformer {
        const index = jQuery(el).index();
 
        // Update the hidden state
-       rendered.renderedOrder[index].hidden = isCollapsed;
+       rendered[index].hidden = isCollapsed;
      });
    });
 

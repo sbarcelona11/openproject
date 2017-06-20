@@ -8,7 +8,7 @@ import {
   hierarchyGroupClass,
   hierarchyRootClass
 } from '../../../helpers/wp-table-hierarchy-helpers';
-import {PrimaryRenderPass, RenderedRow} from '../../primary-render-pass';
+import {PrimaryRenderPass, RowRenderInfo} from '../../primary-render-pass';
 import {States} from '../../../../states.service';
 import {$injectFields} from '../../../../angular/angular-injector-bridge.functions';
 import {WorkPackageTableHierarchies} from '../../../wp-table-hierarchies';

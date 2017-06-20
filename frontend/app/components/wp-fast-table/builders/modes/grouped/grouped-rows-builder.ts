@@ -90,7 +90,7 @@ export class GroupedRowsBuilder extends RowsBuilder {
         const index = jQuery(el).index();
 
         // Update the hidden state
-        rendered.renderedOrder[index].hidden = !!group.collapsed;
+        rendered[index].hidden = !!group.collapsed;
       });
     });
 

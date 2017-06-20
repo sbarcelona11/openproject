@@ -8,14 +8,10 @@ import {
 } from '../../../api/api-v3/hal-resources/work-package-resource.service';
 import {WorkPackageTableColumnsService} from '../../state/wp-table-columns.service';
 import {checkedClassName} from '../ui-state-link-builder';
-import {locateRow, rowId} from '../../helpers/wp-table-row-helpers';
 import {WorkPackageTable} from '../../wp-fast-table';
-import {isRelationColumn, QueryColumn, queryColumnTypes} from '../../../wp-query/query-column';
+import {isRelationColumn, QueryColumn} from '../../../wp-query/query-column';
 import {RelationCellbuilder} from '../relation-cell-builder';
 import {WorkPackageEditForm} from '../../../wp-edit-form/work-package-edit-form';
-import {WorkPackageTableRow} from '../../wp-table.interfaces';
-import {debugLog} from '../../../../helpers/debug_output';
-import {RenderedRow} from '../primary-render-pass';
 
 // Work package table row entries
 export const rowClassName = 'wp-table--row';

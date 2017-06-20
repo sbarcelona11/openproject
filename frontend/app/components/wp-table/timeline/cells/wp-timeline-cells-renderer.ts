@@ -25,14 +25,14 @@
 //
 // See doc/COPYRIGHT.rdoc for more details.
 // ++
-import {States} from "../../../states.service";
-import {RenderInfo} from "../wp-timeline";
-import {TimelineMilestoneCellRenderer} from "./timeline-milestone-cell-renderer";
-import {TimelineCellRenderer} from "./timeline-cell-renderer";
-import {WorkPackageTimelineTableController} from "../container/wp-timeline-container.directive";
-import {$injectFields} from "../../../angular/angular-injector-bridge.functions";
-import {WorkPackageTimelineCell} from "./wp-timeline-cell";
-import {RenderedRow} from "../../../wp-fast-table/builders/primary-render-pass";
+import {States} from '../../../states.service';
+import {RenderInfo} from '../wp-timeline';
+import {TimelineMilestoneCellRenderer} from './timeline-milestone-cell-renderer';
+import {TimelineCellRenderer} from './timeline-cell-renderer';
+import {WorkPackageTimelineTableController} from '../container/wp-timeline-container.directive';
+import {$injectFields} from '../../../angular/angular-injector-bridge.functions';
+import {WorkPackageTimelineCell} from './wp-timeline-cell';
+import {RenderedRow} from '../../../wp-fast-table/builders/primary-render-pass';
 
 export class WorkPackageTimelineCellsRenderer {
   // Injections
@@ -93,21 +93,27 @@ export class WorkPackageTimelineCellsRenderer {
     const newCells:string[] = [];
 
     _.each(this.wpTimeline.workPackageIdOrder, (renderedRow:RenderedRow) => {
+      const wpId = renderedRow.workPackageId;
 
       // Ignore extra rows not tied to a work package
-      if (!renderedRow.workPackage) {
+      if (!wpId) {
+        return;
+      }
+
+      const state = this.states.workPackages.get(wpId);
+      if (state.isPristine()) {
         return;
       }
 
       // Get the associated work package id
-      const workPackage = renderedRow.workPackage;
+      const workPackage = state.value!;
       // As work packages may occur several times, get the unique identifier
       // to identify the cell
       const identifier = renderedRow.classIdentifier;
 
       // Create a cell unless we already have an active cell
       if (!this.hasCell(identifier)) {
-        this.cells[identifier] = this.buildCell(identifier, workPackage.id.toString());
+        this.cells[identifier] = this.buildCell(identifier, wpId.toString());
       }
 
       newCells.push(identifier);

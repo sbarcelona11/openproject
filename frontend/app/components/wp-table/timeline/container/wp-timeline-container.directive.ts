@@ -116,7 +116,6 @@ export class WorkPackageTimelineTableController {
     this.states.table.rendered.values$()
       .takeUntil(this.states.table.stopAllSubscriptions)
       .filter(() => this.initialized)
-      .map(rendered => rendered.renderedOrder)
       .subscribe((orderedRows) => {
         this.workPackageIdOrder = orderedRows;
         this.refreshView();
@@ -300,14 +299,15 @@ export class WorkPackageTimelineTableController {
 
     // Calculate view parameters
     this.workPackageIdOrder.forEach((renderedRow) => {
+      const wpId = renderedRow.workPackageId;
 
       // Not all rendered rows are work packages
-      if (!renderedRow.workPackage) {
+      if (!wpId || this.states.workPackages.get(wpId).isPristine()) {
         return;
       }
 
       // We may still have a reference to a row that, e.g., just got deleted
-      const workPackage = renderedRow.workPackage;
+      const workPackage = this.states.workPackages.get(wpId).value!;
       const startDate = workPackage.startDate ? moment(workPackage.startDate) : currentParams.now;
       const dueDate = workPackage.dueDate ? moment(workPackage.dueDate) : currentParams.now;
       const date = workPackage.date ? moment(workPackage.date) : currentParams.now;

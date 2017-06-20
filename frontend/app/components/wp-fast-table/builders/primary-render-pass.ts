@@ -11,7 +11,7 @@ import {WorkPackageEditForm} from '../../wp-edit-form/work-package-edit-form';
 
 export type RenderedRowType = 'primary' | 'relations';
 
-export interface RenderedRow {
+export interface RowRenderInfo {
   // Unique class name as an identifier to uniquely identify the row in both table and timeline
   classIdentifier:string;
   // Additional classes to be added by any secondary render passes
@@ -29,16 +29,14 @@ export interface RenderedRow {
   data?:any;
 }
 
-export interface TableRenderResult {
-  renderedOrder:RenderedRow[];
-}
+export type RenderedRow = { classIdentifier:string, workPackageId:string|null, hidden:boolean };
 
 export abstract class PrimaryRenderPass {
   public states:States;
   public I18n:op.I18n;
 
   /** The rendered order of rows of work package IDs or <null>, if not a work package row */
-  public renderedOrder:RenderedRow[];
+  public renderedOrder:RowRenderInfo[];
 
   /** Resulting table body */
   public tableBody:DocumentFragment;
@@ -89,7 +87,7 @@ export abstract class PrimaryRenderPass {
    * Refresh a single row using the render pass it was originally created from.
    * @param row
    */
-  public refresh(row:RenderedRow, workPackage:WorkPackageResourceInterface, body:HTMLElement) {
+  public refresh(row:RowRenderInfo, workPackage:WorkPackageResourceInterface, body:HTMLElement) {
     let oldRow = jQuery(body).find(`.${row.classIdentifier}`);
     let replacement:JQuery|null = null;
     let editing = this.states.editing.get(row.workPackage!.id).value;
@@ -107,10 +105,14 @@ export abstract class PrimaryRenderPass {
     }
   }
 
-  public get result():TableRenderResult {
-    return {
-      renderedOrder: this.renderedOrder
-    };
+  public get result():RenderedRow[] {
+    return this.renderedOrder.map((row) => {
+      return {
+        classIdentifier: row.classIdentifier,
+        workPackageId: row.workPackage ? row.workPackage.id : null,
+        hidden: row.hidden
+      } as RenderedRow;
+    });
   }
 
   /**
@@ -119,7 +121,7 @@ export abstract class PrimaryRenderPass {
    * 1. Insert into the document fragment after the last match of the selector
    * 2. Splice into the renderedOrder array.
    */
-  public spliceRow(row:HTMLElement, selector:string, renderedInfo:RenderedRow) {
+  public spliceRow(row:HTMLElement, selector:string, renderedInfo:RowRenderInfo) {
     // Insert into table using the selector
     // If it matches multiple, select the last element
     const target = jQuery(this.tableBody)

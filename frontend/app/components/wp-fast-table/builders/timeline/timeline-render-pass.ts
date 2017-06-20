@@ -1,4 +1,4 @@
-import {PrimaryRenderPass, RenderedRow} from '../primary-render-pass';
+import {PrimaryRenderPass, RowRenderInfo} from '../primary-render-pass';
 import {TimelineRowBuilder} from './timeline-row-builder';
 import {WorkPackageTable} from '../../wp-fast-table';
 
@@ -18,7 +18,7 @@ export class TimelineRenderPass {
     this.timelineBuilder = new TimelineRowBuilder(this.table);
 
     // Render into timeline fragment
-    this.tablePass.renderedOrder.forEach((row:RenderedRow) => {
+    this.tablePass.renderedOrder.forEach((row:RowRenderInfo) => {
       const wpId = row.workPackage ? row.workPackage.id : null;
 
       const secondary = this.timelineBuilder.build(wpId);
