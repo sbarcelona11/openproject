@@ -3,7 +3,7 @@ import {WorkPackageTable} from '../../wp-fast-table';
 import {WorkPackageTableRelationColumnsService} from '../../state/wp-table-relation-columns.service';
 import {$injectFields} from '../../../angular/angular-injector-bridge.functions';
 import {WorkPackageTableColumnsService} from '../../state/wp-table-columns.service';
-import {relationGroupClass, RelationRowBuilder} from './relation-row-builder';
+import {relationGroupClass, relationIdentifier, RelationRowBuilder} from './relation-row-builder';
 import {rowId} from '../../helpers/wp-table-row-helpers';
 import {WorkPackageRelationsService} from '../../../wp-relations/wp-relations.service';
 
@@ -31,25 +31,28 @@ export class RelationsRenderPass implements SecondaryRenderPass {
     rendered.forEach((row:RenderedRow, position:number) => {
 
       // We only care for rows that are natural work packages
-      if (!(row.isWorkPackage && row.belongsTo)) {
+      if (!row.workPackage) {
         return;
       }
 
       // If the work package has no relations, ignore
-      const fromId = row.belongsTo.id;
+      const workPackage = row.workPackage;
+      const fromId = workPackage.id;
       const state = this.wpRelations.getRelationsForWorkPackage(fromId);
       if (!state.hasValue() || _.size(state.value!) === 0) {
         return;
       }
 
-      this.wpTableRelationColumns.relationsToExtendFor(row.belongsTo,
+      this.wpTableRelationColumns.relationsToExtendFor(row.workPackage,
         state.value!,
         (relation, type) => {
 
           // Build each relation row (currently sorted by order defined in API)
-          const [relationRow,] = this.relationRowBuilder.buildEmptyRelationRow(row.belongsTo!,
+          const [relationRow, target] = this.relationRowBuilder.buildEmptyRelationRow(
+            workPackage,
             relation,
-            type);
+            type
+          );
 
           // Augment any data for the belonging work package row to it
           this.tablePass.augmentSecondaryElement(relationRow, row);
@@ -62,8 +65,9 @@ export class RelationsRenderPass implements SecondaryRenderPass {
             relationRow,
             `#${rowId(fromId)},.${relationGroupClass(fromId)}`,
             {
-              isWorkPackage: false,
-              belongsTo: row.belongsTo,
+              classIdentifier: relationIdentifier(target.id, fromId),
+              workPackage: target,
+              belongsTo: workPackage,
               hidden: row.hidden
             }
           );

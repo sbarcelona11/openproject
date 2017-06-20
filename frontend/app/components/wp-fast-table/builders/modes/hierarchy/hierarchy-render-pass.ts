@@ -3,6 +3,7 @@ import {WorkPackageResourceInterface} from '../../../../api/api-v3/hal-resources
 import {SingleHierarchyRowBuilder} from './single-hierarchy-row-builder';
 import {WorkPackageTableRow} from '../../../wp-table.interfaces';
 import {
+  ancestorClassIdentifier,
   collapsedGroupClass,
   hierarchyGroupClass,
   hierarchyRootClass
@@ -181,19 +182,19 @@ export class HierarchyRenderPass extends PrimaryRenderPass {
   private markRendered(workPackage:WorkPackageResourceInterface, hidden:boolean = false, isAncestor:boolean) {
     this.rendered[workPackage.id] = true;
     this.renderedOrder.push({
-      isWorkPackage: !isAncestor,
-      belongsTo: workPackage,
+      classIdentifier: isAncestor ? ancestorClassIdentifier(workPackage.id) : rowClass(workPackage.id),
+      workPackage: isAncestor ? null : workPackage,
       hidden: hidden
     });
   }
 
 
   public augmentSecondaryElement(row:HTMLElement, rendered:RenderedRow):HTMLElement {
-    if (!rendered.belongsTo) {
+    if (!rendered.workPackage) {
       return row;
     }
 
-    const workPackage = rendered.belongsTo;
+    const workPackage = rendered.workPackage!;
     const rowClasses = [hierarchyRootClass(workPackage.id)];
 
     if (_.isArray(workPackage.ancestors)) {
@@ -229,8 +230,8 @@ export class HierarchyRenderPass extends PrimaryRenderPass {
       el,
       `${hierarchyRoot},${hierarchyGroup}`,
       {
-        isWorkPackage: !isAncestor,
-        belongsTo: workPackage,
+        classIdentifier: isAncestor ? ancestorClassIdentifier(workPackage.id) : rowClass(workPackage.id),
+        workPackage: isAncestor ? null : workPackage,
         hidden: hidden,
       }
     );

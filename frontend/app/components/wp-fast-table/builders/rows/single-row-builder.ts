@@ -75,21 +75,9 @@ export class SingleRowBuilder {
   /**
    * Build the columns on the given empty row
    */
-  public buildEmpty(workPackage:WorkPackageResourceInterface):[HTMLElement,boolean] {
+  public buildEmpty(workPackage:WorkPackageResourceInterface):[HTMLElement, boolean] {
     let row = this.createEmptyRow(workPackage);
-    let cell = null;
-
-    this.augmentedColumns.forEach((column:QueryColumn) => {
-      cell = this.buildCell(workPackage, column);
-      row.appendChild(cell);
-    });
-
-    // Set the row selection state
-    if (this.wpTableSelection.isSelected(<string>workPackage.id)) {
-      row.classList.add(checkedClassName);
-    }
-
-    return [row, false];
+    return this.buildEmptyRow(workPackage, row);
   }
 
   /**
@@ -104,5 +92,21 @@ export class SingleRowBuilder {
     tr.classList.add(rowClassName, commonRowClassName, `${commonRowClassName}-${workPackage.id}`, 'issue');
 
     return tr;
+  }
+
+  protected buildEmptyRow(workPackage:WorkPackageResourceInterface, row:HTMLElement):[HTMLElement, boolean] {
+    let cell = null;
+
+    this.augmentedColumns.forEach((column:QueryColumn) => {
+      cell = this.buildCell(workPackage, column);
+      row.appendChild(cell);
+    });
+
+    // Set the row selection state
+    if (this.wpTableSelection.isSelected(<string>workPackage.id)) {
+      row.classList.add(checkedClassName);
+    }
+
+    return [row, false];
   }
 }

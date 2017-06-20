@@ -91,7 +91,7 @@ export class TableState extends StatesGroup {
   rendered = input<TableRenderResult>();
 
   renderedWorkPackages: State<RenderedRow[]> = derive(this.rendered, $ => $
-    .map(rows => rows.renderedOrder.filter(row => row.isWorkPackage)));
+    .map(rows => rows.renderedOrder.filter(row => !!row.workPackage)));
 
   // State to determine timeline visibility
   timelineVisible = input<WorkPackageTableTimelineState>();

@@ -147,8 +147,17 @@ export class WorkPackageTimelineTableController {
     return this.cellsRenderer.hasCell(wpId);
   }
 
-  workPackageCell(wpId:string):WorkPackageTimelineCell {
-    return this.cellsRenderer.cells[wpId];
+  workPackageCells(wpId:string):WorkPackageTimelineCell[] {
+    return this.cellsRenderer.getCellsFor(wpId);
+  }
+
+  /**
+   * Return the index of a given row by its class identifier
+   * @param cell
+   * @return {number}
+   */
+  workPackageIndex(classIdentifier:string):number {
+    return this.workPackageIdOrder.findIndex((el) => el.classIdentifier === classIdentifier);
   }
 
   onRefreshRequested(name:string, callback:(vp:TimelineViewParameters) => void) {
@@ -215,7 +224,7 @@ export class WorkPackageTimelineTableController {
           this.debouncedRefresh();
         } else {
           // Refresh the single cell
-          this.cellsRenderer.refreshCellFor(wpId);
+          this.cellsRenderer.refreshCellsFor(wpId);
         }
       });
   }
@@ -293,16 +302,12 @@ export class WorkPackageTimelineTableController {
     this.workPackageIdOrder.forEach((renderedRow) => {
 
       // Not all rendered rows are work packages
-      if (!renderedRow.isWorkPackage) {
+      if (!renderedRow.workPackage) {
         return;
       }
 
       // We may still have a reference to a row that, e.g., just got deleted
-      const workPackage = renderedRow.belongsTo;
-      if (!workPackage) {
-        return;
-      }
-
+      const workPackage = renderedRow.workPackage;
       const startDate = workPackage.startDate ? moment(workPackage.startDate) : currentParams.now;
       const dueDate = workPackage.dueDate ? moment(workPackage.dueDate) : currentParams.now;
       const date = workPackage.date ? moment(workPackage.date) : currentParams.now;

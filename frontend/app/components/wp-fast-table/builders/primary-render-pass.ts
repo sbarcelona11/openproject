@@ -9,8 +9,14 @@ import {RelationsRenderPass} from './relations/relations-render-pass';
 import {timeOutput} from '../../../helpers/debug_output';
 
 export interface RenderedRow {
-  isWorkPackage:boolean;
+  // Unique class name as an identifier to uniquely identify the row in both table and timeline
+  classIdentifier:string;
+  // If this row is a work package, contains a reference to the rendered WP
+  workPackage:WorkPackageResourceInterface|null;
+  // If this is an additional row not present, this contains a reference to the WP
+  // it originated from
   belongsTo?:WorkPackageResourceInterface;
+  // Marks if the row is currently hidden to the user
   hidden:boolean;
 }
 
@@ -135,8 +141,8 @@ export abstract class PrimaryRenderPass {
     this.tableBody.appendChild(row);
 
     this.renderedOrder.push({
-      isWorkPackage: true,
-      belongsTo: workPackage,
+      classIdentifier: rowClass(workPackage.id),
+      workPackage: workPackage,
       hidden: hidden
     });
   }
@@ -152,7 +158,8 @@ export abstract class PrimaryRenderPass {
     this.tableBody.appendChild(row);
 
     this.renderedOrder.push({
-      isWorkPackage: false,
+      classIdentifier: classIdentifer,
+      workPackage: null,
       hidden: hidden
     });
   }

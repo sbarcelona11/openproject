@@ -38,7 +38,7 @@ export class WorkPackageTimelineCellsRenderer {
   // Injections
   public states:States;
 
-  public cells:{ [id:string]:WorkPackageTimelineCell } = {};
+  public cells:{ [classIdentifier:string]:WorkPackageTimelineCell } = {};
 
   private cellRenderers:{ milestone:TimelineMilestoneCellRenderer, generic:TimelineCellRenderer };
 
@@ -52,7 +52,11 @@ export class WorkPackageTimelineCellsRenderer {
   }
 
   public hasCell(wpId:string) {
-    return !!this.cells[wpId];
+    return this.getCellsFor(wpId).length > 0;
+  }
+
+  public getCellsFor(wpId:string):WorkPackageTimelineCell[] {
+    return _.filter(this.cells, (cell) => cell.workPackageId === wpId) || [];
   }
 
   /**
@@ -66,10 +70,8 @@ export class WorkPackageTimelineCellsRenderer {
     _.each(this.cells, (cell) => this.refreshSingleCell(cell));
   }
 
-  public refreshCellFor(wpId:string) {
-    if (this.hasCell(wpId)) {
-      this.refreshSingleCell(this.cells[wpId]);
-    }
+  public refreshCellsFor(wpId:string) {
+    _.each(this.getCellsFor(wpId), (cell) => this.refreshSingleCell(cell));
   }
 
   public refreshSingleCell(cell:WorkPackageTimelineCell) {
@@ -93,35 +95,37 @@ export class WorkPackageTimelineCellsRenderer {
     _.each(this.wpTimeline.workPackageIdOrder, (renderedRow:RenderedRow) => {
 
       // Ignore extra rows not tied to a work package
-      if (!(renderedRow.isWorkPackage && renderedRow.belongsTo)) {
+      if (!renderedRow.workPackage) {
         return;
       }
 
-      const wpId = renderedRow.belongsTo.id.toString();
-      if (!wpId) {
-        return;
-      }
+      // Get the associated work package id
+      const workPackage = renderedRow.workPackage;
+      // As work packages may occur several times, get the unique identifier
+      // to identify the cell
+      const identifier = renderedRow.classIdentifier;
 
       // Create a cell unless we already have an active cell
-      if (!this.hasCell(wpId)) {
-        this.cells[wpId] = this.buildCell(wpId);
+      if (!this.hasCell(identifier)) {
+        this.cells[identifier] = this.buildCell(identifier, workPackage.id.toString());
       }
 
-      newCells.push(wpId);
+      newCells.push(identifier);
     });
 
-    _.difference(currentlyActive, newCells).forEach((wpId:string) => {
-      this.cells[wpId].clear();
-      delete this.cells[wpId];
+    _.difference(currentlyActive, newCells).forEach((identifier:string) => {
+      this.cells[identifier].clear();
+      delete this.cells[identifier];
     });
   }
 
-  private buildCell(wpId:string) {
+  private buildCell(classIdentifier:string, workPackageId:string) {
     return new WorkPackageTimelineCell(
       this.wpTimeline,
       this.cellRenderers,
-      this.renderInfoFor(wpId),
-      wpId
+      this.renderInfoFor(workPackageId),
+      classIdentifier,
+      workPackageId
     );
   }
 

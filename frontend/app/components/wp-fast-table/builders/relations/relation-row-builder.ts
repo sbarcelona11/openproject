@@ -18,94 +18,51 @@ export function relationGroupClass(workPackageId:string) {
   return `__relations-expanded-from-${workPackageId}`;
 }
 
+export function relationIdentifier(targetId:string, workPackageId:string) {
+  return `wp-relation-row-${workPackageId}-to-${targetId}`;
+}
+
 export const internalDetailsColumn = {
   id: '__internal-detailsLink'
 } as QueryColumn;
 
 export class RelationRowBuilder extends SingleRowBuilder {
-  public uiStateBuilder:UiStateLinkBuilder;
   public states:States;
   public I18n:op.I18n;
 
   constructor(protected workPackageTable:WorkPackageTable) {
     super(workPackageTable);
-    this.uiStateBuilder = new UiStateLinkBuilder();
     $injectFields(this, 'I18n', 'states');
   }
 
   /**
    * Build the columns on the given empty row
    */
-  public buildEmptyRelationRow(from:WorkPackageResourceInterface, relation:RelationResource, type:RelationColumnType):[HTMLElement, boolean] {
+  public buildEmptyRelationRow(from:WorkPackageResourceInterface, relation:RelationResource, type:RelationColumnType):[HTMLElement,WorkPackageResourceInterface] {
     const denormalized = relation.denormalized(from);
-    const tr = this.createEmptyRelationRow(from, denormalized);
-    const columns = this.wpTableColumns.getColumns();
 
-    // Set available information for ID and subject column
-    // and print hierarchy indicator at subject field.
-    columns.forEach((column:QueryColumn) => {
-      const td = document.createElement('td');
+    const to = this.states.workPackages.get(denormalized.targetId).value! as WorkPackageResourceInterface;
 
-      if (column.id === 'subject') {
-        this.buildRelationLabel(td, from, denormalized, type);
-      }
+    // Let the primary row builder build the row
+    const row = this.createEmptyRelationRow(from, to);
+    const [tr, _] = super.buildEmptyRow(to, row);
 
-      if (column.id === 'id') {
-        const link = this.uiStateBuilder.linkToShow(
-          denormalized.target.id,
-          denormalized.target.name,
-          denormalized.target.id
-        );
-
-        td.appendChild(link);
-        td.classList.add('relation-row--id-cell');
-      }
-
-      tr.appendChild(td);
-    });
-
-    // Append details icon
-    const td = document.createElement('td');
-    tr.appendChild(td);
-
-    return [tr, false];
+    return [tr, to];
   }
-
   /**
    * Create an empty unattached row element for the given work package
    * @param workPackage
    * @returns {any}
    */
-  public createEmptyRelationRow(from:WorkPackageResource, relation:DenormalizedRelationData) {
+  public createEmptyRelationRow(from:WorkPackageResource, to:WorkPackageResource) {
     let tr = document.createElement('tr');
+    tr.dataset['workPackageId'] = from.id;
     tr.dataset['relatedWorkPackageId'] = from.id;
     tr.classList.add(
-      rowClassName, commonRowClassName, 'issue', '-no-highlighting',
-      `wp-table--relations-aditional-row`, relationGroupClass(from.id)
+      rowClassName, commonRowClassName, 'issue',
+      `wp-table--relations-aditional-row`, relationIdentifier(to.id, from.id), relationGroupClass(from.id)
     );
 
     return tr;
-  }
-
-  private buildRelationLabel(cell:HTMLElement, from:WorkPackageResource, denormalized:DenormalizedRelationData, type:RelationColumnType) {
-    let typeLabel;
-
-    // Add the relation label if this is a "Relations for <WP Type>" column
-    if (type === 'toType') {
-      typeLabel = this.I18n.t(`js.relation_labels.${denormalized.relationType}`);
-    }
-    // Add the WP type label if this is a "<Relation Type> Relations" column
-    if (type === 'ofType') {
-      const wp = this.states.workPackages.get(denormalized.target.id).value!;
-      typeLabel = wp.type.name;
-    }
-
-    const relationLabel = document.createElement('span');
-    relationLabel.classList.add('relation-row--type-label');
-    relationLabel.textContent = typeLabel;
-
-    const textNode = document.createTextNode(denormalized.target.name);
-    cell.appendChild(relationLabel);
-    cell.appendChild(textNode);
   }
 }

@@ -19,11 +19,11 @@ export class TimelineRenderPass implements SecondaryRenderPass {
 
     // Render into timeline fragment
     this.tablePass.renderedOrder.forEach((row:RenderedRow) => {
-      const wpId = row.isWorkPackage ? row.belongsTo!.id : null;
+      const wpId = row.workPackage ? row.workPackage.id : null;
 
       const secondary = this.timelineBuilder.build(wpId);
       this.tablePass.augmentSecondaryElement(secondary, row);
-
+      secondary.classList.add(row.classIdentifier);
       this.timelineBody.appendChild(secondary);
     });
   }
