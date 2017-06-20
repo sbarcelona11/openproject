@@ -88,7 +88,7 @@ export class RelationRowBuilder extends SingleRowBuilder {
    * @param denormalized
    * @param type
    */
-  public appendRelationLabel(jRow:JQuery, from:WorkPackageResourceInterface, relation:RelationResource, type:RelationColumnType) {
+  public appendRelationLabel(jRow:JQuery, from:WorkPackageResourceInterface, relation:RelationResource, columnId:string, type:RelationColumnType) {
     const denormalized = relation.denormalized(from);
     let typeLabel;
 
@@ -108,7 +108,8 @@ export class RelationRowBuilder extends SingleRowBuilder {
 
     const textNode = document.createTextNode(denormalized.target.name);
 
-    jRow.find(`.${relationCellClassName}`).empty().append(relationLabel);
+    jRow.find(`.${relationCellClassName}`).empty();
+    jRow.find(`.${relationCellClassName}.${columnId}`).append(relationLabel);
   }
 
   protected emptyRelationCell(column:QueryColumn) {

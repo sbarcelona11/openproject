@@ -10,15 +10,13 @@ import {relationGroupClass, relationIdentifier, RelationRowBuilder} from './rela
 import {rowId} from '../../helpers/wp-table-row-helpers';
 import {WorkPackageRelationsService} from '../../../wp-relations/wp-relations.service';
 import {WorkPackageEditForm} from '../../../wp-edit-form/work-package-edit-form';
-import {
-  WorkPackageResource,
-  WorkPackageResourceInterface
-} from '../../../api/api-v3/hal-resources/work-package-resource.service';
+import {WorkPackageResourceInterface} from '../../../api/api-v3/hal-resources/work-package-resource.service';
 import {RelationResource} from '../../../api/api-v3/hal-resources/relation-resource.service';
 
 export interface RelationRenderInfo extends RenderedRow {
   data:{
     relation:RelationResource;
+    columnId:string;
     relationType:RelationColumnType;
   };
 }
@@ -61,7 +59,7 @@ export class RelationsRenderPass {
 
       this.wpTableRelationColumns.relationsToExtendFor(row.workPackage,
         state.value!,
-        (relation, type) => {
+        (relation, column, type) => {
 
           // Build each relation row (currently sorted by order defined in API)
           const [relationRow, target] = this.relationRowBuilder.buildEmptyRelationRow(
@@ -75,6 +73,7 @@ export class RelationsRenderPass {
           this.relationRowBuilder.appendRelationLabel(jQuery(relationRow),
             workPackage,
             relation,
+            column.id,
             type);
 
           // Insert next to the work package row
@@ -92,6 +91,7 @@ export class RelationsRenderPass {
               hidden: row.hidden,
               data: {
                 relation: relation,
+                columnId: column.id,
                 relationType: type
               }
             } as RelationRenderInfo
@@ -108,6 +108,7 @@ export class RelationsRenderPass {
     this.relationRowBuilder.appendRelationLabel(newRow,
       renderedRow.belongsTo!,
       renderedRow.data.relation,
+      renderedRow.data.columnId,
       renderedRow.data.relationType);
 
     return newRow;
