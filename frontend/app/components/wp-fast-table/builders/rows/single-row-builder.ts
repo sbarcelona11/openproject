@@ -90,14 +90,17 @@ export class SingleRowBuilder {
    */
   public createEmptyRow(workPackage:WorkPackageResource) {
     let tr = document.createElement('tr');
-    tr.id = rowId(workPackage.id);
     tr.dataset['workPackageId'] = workPackage.id;
     tr.classList.add(rowClassName,
       commonRowClassName,
-      `${commonRowClassName}-${workPackage.id}`,
+      this.classIdentifier(workPackage),
       'issue');
 
     return tr;
+  }
+
+  public classIdentifier(workPackage:WorkPackageResource) {
+    return `${commonRowClassName}-${workPackage.id}`;
   }
 
   /**

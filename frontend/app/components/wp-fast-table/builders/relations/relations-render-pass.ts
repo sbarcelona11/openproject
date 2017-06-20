@@ -6,8 +6,7 @@ import {
 } from '../../state/wp-table-relation-columns.service';
 import {$injectFields} from '../../../angular/angular-injector-bridge.functions';
 import {WorkPackageTableColumnsService} from '../../state/wp-table-columns.service';
-import {relationGroupClass, relationIdentifier, RelationRowBuilder} from './relation-row-builder';
-import {rowId} from '../../helpers/wp-table-row-helpers';
+import {relationGroupClass, RelationRowBuilder} from './relation-row-builder';
 import {WorkPackageRelationsService} from '../../../wp-relations/wp-relations.service';
 import {WorkPackageEditForm} from '../../../wp-edit-form/work-package-edit-form';
 import {WorkPackageResourceInterface} from '../../../api/api-v3/hal-resources/work-package-resource.service';
@@ -57,7 +56,7 @@ export class RelationsRenderPass {
         return;
       }
 
-      this.wpTableRelationColumns.relationsToExtendFor(row.workPackage,
+      this.wpTableRelationColumns.relationsToExtendFor(workPackage,
         state.value!,
         (relation, column, type) => {
 
@@ -69,7 +68,7 @@ export class RelationsRenderPass {
           );
 
           // Augment any data for the belonging work package row to it
-          this.tablePass.augmentSecondaryElement(relationRow, row);
+          relationRow.classList.add(...row.additionalClasses);
           this.relationRowBuilder.appendRelationLabel(jQuery(relationRow),
             workPackage,
             relation,
@@ -82,9 +81,10 @@ export class RelationsRenderPass {
           // Insert into table
           this.tablePass.spliceRow(
             relationRow,
-            `#${rowId(fromId)},.${relationGroupClass(fromId)}`,
+            `.${this.relationRowBuilder.classIdentifier(workPackage)},.${relationGroupClass(fromId)}`,
             {
-              classIdentifier: relationIdentifier(target.id, fromId),
+              classIdentifier: this.relationRowBuilder.relationClassIdentifier(workPackage, target),
+              additionalClasses: ['wp-table--relations-aditional-row'],
               workPackage: target,
               belongsTo: workPackage,
               renderType: 'relations',

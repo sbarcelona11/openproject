@@ -1,14 +1,14 @@
-import {InputState} from "reactivestates";
-import {debugLog} from "../../../../helpers/debug_output";
-import {injectorBridge} from "../../../angular/angular-injector-bridge.functions";
-import {States} from "../../../states.service";
-import {TableRowEditContext} from "../../../wp-edit-form/table-row-edit-context";
-import {WorkPackageEditForm} from "../../../wp-edit-form/work-package-edit-form";
-import {cellClassName, editableClassName, readOnlyClassName} from "../../builders/cell-builder";
-import {rowClassName} from "../../builders/rows/single-row-builder";
-import {WorkPackageTable} from "../../wp-fast-table";
-import {ClickOrEnterHandler} from "../click-or-enter-handler";
-import {TableEventHandler} from "../table-handler-registry";
+import {InputState} from 'reactivestates';
+import {debugLog} from '../../../../helpers/debug_output';
+import {injectorBridge} from '../../../angular/angular-injector-bridge.functions';
+import {States} from '../../../states.service';
+import {TableRowEditContext} from '../../../wp-edit-form/table-row-edit-context';
+import {WorkPackageEditForm} from '../../../wp-edit-form/work-package-edit-form';
+import {cellClassName, editableClassName, readOnlyClassName} from '../../builders/cell-builder';
+import {rowClassName} from '../../builders/rows/single-row-builder';
+import {WorkPackageTable} from '../../wp-fast-table';
+import {ClickOrEnterHandler} from '../click-or-enter-handler';
+import {TableEventHandler} from '../table-handler-registry';
 
 export class EditCellHandler extends ClickOrEnterHandler implements TableEventHandler {
   // Injections

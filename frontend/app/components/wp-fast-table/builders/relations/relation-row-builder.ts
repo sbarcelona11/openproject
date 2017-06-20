@@ -76,10 +76,14 @@ export class RelationRowBuilder extends SingleRowBuilder {
     tr.dataset['relatedWorkPackageId'] = from.id;
     tr.classList.add(
       rowClassName, commonRowClassName, 'issue',
-      `wp-table--relations-aditional-row`, relationIdentifier(to.id, from.id), relationGroupClass(from.id)
+      `wp-table--relations-aditional-row`, this.relationClassIdentifier(from, to), relationGroupClass(from.id)
     );
 
     return tr;
+  }
+
+  public relationClassIdentifier(from:WorkPackageResource, to:WorkPackageResource) {
+    return relationIdentifier(to.id, from.id);
   }
 
   /**

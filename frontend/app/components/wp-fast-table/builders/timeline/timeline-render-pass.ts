@@ -22,8 +22,7 @@ export class TimelineRenderPass {
       const wpId = row.workPackage ? row.workPackage.id : null;
 
       const secondary = this.timelineBuilder.build(wpId);
-      this.tablePass.augmentSecondaryElement(secondary, row);
-      secondary.classList.add(row.classIdentifier);
+      secondary.classList.add(row.classIdentifier, `${row.classIdentifier}-timeline`, ...row.additionalClasses);
       this.timelineBody.appendChild(secondary);
     });
   }

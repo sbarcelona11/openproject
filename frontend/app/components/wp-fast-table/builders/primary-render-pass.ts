@@ -14,6 +14,8 @@ export type RenderedRowType = 'primary' | 'relations';
 export interface RenderedRow {
   // Unique class name as an identifier to uniquely identify the row in both table and timeline
   classIdentifier:string;
+  // Additional classes to be added by any secondary render passes
+  additionalClasses:string[];
   // If this row is a work package, contains a reference to the rendered WP
   workPackage:WorkPackageResourceInterface|null;
   // If this is an additional row not present, this contains a reference to the WP
@@ -105,20 +107,6 @@ export abstract class PrimaryRenderPass {
     }
   }
 
-  /**
-   * Augment a new row added by a secondary render pass with whatever information is needed
-   * by the current render mode.
-   *
-   * e.g., add a class name to demark which group this element belongs to.
-   *
-   * @param row The HTMLElement to be inserted by the secondary render pass.
-   * @param belongsTo The RenderedRow the element will be inserted for.
-   * @return {HTMLElement} The augmented row element.
-   */
-  public augmentSecondaryElement(row:HTMLElement, belongsTo:RenderedRow):HTMLElement {
-    return row;
-  }
-
   public get result():TableRenderResult {
     return {
       renderedOrder: this.renderedOrder
@@ -167,12 +155,14 @@ export abstract class PrimaryRenderPass {
    */
   protected appendRow(workPackage:WorkPackageResourceInterface,
                       row:HTMLElement,
+                      additionalClasses:string[] = [],
                       hidden:boolean = false) {
 
     this.tableBody.appendChild(row);
 
     this.renderedOrder.push({
       classIdentifier: rowClass(workPackage.id),
+      additionalClasses: additionalClasses,
       workPackage: workPackage,
       renderType: 'primary',
       hidden: hidden
@@ -185,12 +175,16 @@ export abstract class PrimaryRenderPass {
    * @param classIdentifer a unique identifier for the two rows (one each in table/timeline).
    * @param hidden whether the row was rendered hidden
    */
-  protected appendNonWorkPackageRow(row:HTMLElement, classIdentifer:string, hidden:boolean = false) {
+  protected appendNonWorkPackageRow(row:HTMLElement,
+                                    classIdentifer:string,
+                                    additionalClasses:string[] = [],
+                                    hidden:boolean = false) {
     row.classList.add(classIdentifer);
     this.tableBody.appendChild(row);
 
     this.renderedOrder.push({
       classIdentifier: classIdentifer,
+      additionalClasses: additionalClasses,
       workPackage: null,
       renderType: 'primary',
       hidden: hidden
