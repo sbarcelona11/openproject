@@ -5,8 +5,11 @@ import {$injectFields} from '../../angular/angular-injector-bridge.functions';
 import {rowClass} from '../helpers/wp-table-row-helpers';
 import {TimelineRenderPass} from './timeline/timeline-render-pass';
 import {SingleRowBuilder} from './rows/single-row-builder';
-import {RelationsRenderPass} from './relations/relations-render-pass';
+import {RelationRenderInfo, RelationsRenderPass} from './relations/relations-render-pass';
 import {timeOutput} from '../../../helpers/debug_output';
+import {WorkPackageEditForm} from '../../wp-edit-form/work-package-edit-form';
+
+export type RenderedRowType = 'primary' | 'relations';
 
 export interface RenderedRow {
   // Unique class name as an identifier to uniquely identify the row in both table and timeline
@@ -16,16 +19,16 @@ export interface RenderedRow {
   // If this is an additional row not present, this contains a reference to the WP
   // it originated from
   belongsTo?:WorkPackageResourceInterface;
+  // The type of row this was rendered from
+  renderType:RenderedRowType;
   // Marks if the row is currently hidden to the user
   hidden:boolean;
+  // Additional data by the render passes
+  data?:any;
 }
 
 export interface TableRenderResult {
   renderedOrder:RenderedRow[];
-}
-
-export interface SecondaryRenderPass {
-  render():void;
 }
 
 export abstract class PrimaryRenderPass {
@@ -42,13 +45,19 @@ export abstract class PrimaryRenderPass {
   public timeline:TimelineRenderPass;
 
   /** Additional render pass that handles table relation rendering */
-  public relations:SecondaryRenderPass;
+  public relations:RelationsRenderPass;
 
-  constructor(public workPackageTable:WorkPackageTable, public rowBuilder:SingleRowBuilder) {
+  constructor(public workPackageTable:WorkPackageTable,
+              public rowBuilder:SingleRowBuilder) {
     $injectFields(this, 'states', 'I18n');
 
   }
 
+  /**
+   * Execute the entire render pass, executing this pass and all subsequent registered passes
+   * for timeline and relations.
+   * @return {PrimaryRenderPass}
+   */
   public render():this {
 
     timeOutput('Primary render pass', () => {
@@ -72,6 +81,28 @@ export abstract class PrimaryRenderPass {
     });
 
     return this;
+  }
+
+  /**
+   * Refresh a single row using the render pass it was originally created from.
+   * @param row
+   */
+  public refresh(row:RenderedRow, workPackage:WorkPackageResourceInterface, body:HTMLElement) {
+    let oldRow = jQuery(body).find(`.${row.classIdentifier}`);
+    let replacement:JQuery|null = null;
+    let editing = this.states.editing.get(row.workPackage!.id).value;
+
+    switch(row.renderType) {
+      case 'primary':
+        replacement =  this.rowBuilder.refreshRow(workPackage, editing, oldRow);
+        break;
+      case 'relations':
+        replacement = this.relations.refreshRelationRow(row as RelationRenderInfo, workPackage, editing, oldRow);
+    }
+
+    if (replacement !== null && oldRow.length) {
+      oldRow.replaceWith(replacement);
+    }
   }
 
   /**
@@ -143,6 +174,7 @@ export abstract class PrimaryRenderPass {
     this.renderedOrder.push({
       classIdentifier: rowClass(workPackage.id),
       workPackage: workPackage,
+      renderType: 'primary',
       hidden: hidden
     });
   }
@@ -160,6 +192,7 @@ export abstract class PrimaryRenderPass {
     this.renderedOrder.push({
       classIdentifier: classIdentifer,
       workPackage: null,
+      renderType: 'primary',
       hidden: hidden
     });
   }

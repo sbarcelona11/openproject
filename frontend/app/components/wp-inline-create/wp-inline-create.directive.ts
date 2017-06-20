@@ -111,14 +111,8 @@ export class WorkPackageInlineCreateController {
       .takeUntil(scopeDestroyed$($scope)).subscribe(() => {
         const rowElement = this.$element.find(`.${inlineCreateRowClassName}`);
 
-        if (rowElement.length) {
-          const data = {
-            element: rowElement[0],
-            object: this.currentWorkPackage,
-            workPackageId: 'new',
-            position: 0
-          };
-          this.rowBuilder.refreshRow(data as WorkPackageTableRow, this.workPackageEditForm);
+        if (rowElement.length && this.currentWorkPackage) {
+          this.rowBuilder.refreshRow(this.currentWorkPackage, this.workPackageEditForm, rowElement);
         }
     });
 

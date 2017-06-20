@@ -1,8 +1,8 @@
-import {PrimaryRenderPass, RenderedRow, SecondaryRenderPass} from '../primary-render-pass';
+import {PrimaryRenderPass, RenderedRow} from '../primary-render-pass';
 import {TimelineRowBuilder} from './timeline-row-builder';
 import {WorkPackageTable} from '../../wp-fast-table';
 
-export class TimelineRenderPass implements SecondaryRenderPass {
+export class TimelineRenderPass {
   /** Row builders */
   protected timelineBuilder:TimelineRowBuilder;
 

@@ -1,13 +1,29 @@
-import {PrimaryRenderPass, RenderedRow, SecondaryRenderPass} from '../primary-render-pass';
+import {PrimaryRenderPass, RenderedRow} from '../primary-render-pass';
 import {WorkPackageTable} from '../../wp-fast-table';
-import {WorkPackageTableRelationColumnsService} from '../../state/wp-table-relation-columns.service';
+import {
+  RelationColumnType,
+  WorkPackageTableRelationColumnsService
+} from '../../state/wp-table-relation-columns.service';
 import {$injectFields} from '../../../angular/angular-injector-bridge.functions';
 import {WorkPackageTableColumnsService} from '../../state/wp-table-columns.service';
 import {relationGroupClass, relationIdentifier, RelationRowBuilder} from './relation-row-builder';
 import {rowId} from '../../helpers/wp-table-row-helpers';
 import {WorkPackageRelationsService} from '../../../wp-relations/wp-relations.service';
+import {WorkPackageEditForm} from '../../../wp-edit-form/work-package-edit-form';
+import {
+  WorkPackageResource,
+  WorkPackageResourceInterface
+} from '../../../api/api-v3/hal-resources/work-package-resource.service';
+import {RelationResource} from '../../../api/api-v3/hal-resources/relation-resource.service';
 
-export class RelationsRenderPass implements SecondaryRenderPass {
+export interface RelationRenderInfo extends RenderedRow {
+  data:{
+    relation:RelationResource;
+    relationType:RelationColumnType;
+  };
+}
+
+export class RelationsRenderPass {
   public wpRelations:WorkPackageRelationsService;
   public wpTableColumns:WorkPackageTableColumnsService;
   public wpTableRelationColumns:WorkPackageTableRelationColumnsService;
@@ -56,6 +72,10 @@ export class RelationsRenderPass implements SecondaryRenderPass {
 
           // Augment any data for the belonging work package row to it
           this.tablePass.augmentSecondaryElement(relationRow, row);
+          this.relationRowBuilder.appendRelationLabel(jQuery(relationRow),
+            workPackage,
+            relation,
+            type);
 
           // Insert next to the work package row
           // If no relations exist until here, directly under the row
@@ -68,11 +88,29 @@ export class RelationsRenderPass implements SecondaryRenderPass {
               classIdentifier: relationIdentifier(target.id, fromId),
               workPackage: target,
               belongsTo: workPackage,
-              hidden: row.hidden
-            }
+              renderType: 'relations',
+              hidden: row.hidden,
+              data: {
+                relation: relation,
+                relationType: type
+              }
+            } as RelationRenderInfo
           );
         });
     });
+  }
+
+  public refreshRelationRow(renderedRow:RelationRenderInfo,
+                            workPackage:WorkPackageResourceInterface,
+                            editing:WorkPackageEditForm | undefined,
+                            oldRow:JQuery) {
+    const newRow = this.relationRowBuilder.refreshRow(workPackage, editing, oldRow);
+    this.relationRowBuilder.appendRelationLabel(newRow,
+      renderedRow.belongsTo!,
+      renderedRow.data.relation,
+      renderedRow.data.relationType);
+
+    return newRow;
   }
 
   private get isApplicable() {

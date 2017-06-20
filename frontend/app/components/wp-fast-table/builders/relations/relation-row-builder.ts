@@ -9,10 +9,11 @@ import {
   RelationResource
 } from '../../../api/api-v3/hal-resources/relation-resource.service';
 import {UiStateLinkBuilder} from '../ui-state-link-builder';
-import {QueryColumn} from '../../../wp-query/query-column';
+import {isRelationColumn, QueryColumn, queryColumnTypes} from '../../../wp-query/query-column';
 import {$injectFields} from '../../../angular/angular-injector-bridge.functions';
 import {RelationColumnType} from '../../state/wp-table-relation-columns.service';
 import {States} from '../../../states.service';
+import {wpCellTdClassName} from '../cell-builder';
 
 export function relationGroupClass(workPackageId:string) {
   return `__relations-expanded-from-${workPackageId}`;
@@ -22,9 +23,7 @@ export function relationIdentifier(targetId:string, workPackageId:string) {
   return `wp-relation-row-${workPackageId}-to-${targetId}`;
 }
 
-export const internalDetailsColumn = {
-  id: '__internal-detailsLink'
-} as QueryColumn;
+export const relationCellClassName = 'wp-table--relation-cell-td';
 
 export class RelationRowBuilder extends SingleRowBuilder {
   public states:States;
@@ -36,9 +35,26 @@ export class RelationRowBuilder extends SingleRowBuilder {
   }
 
   /**
+   * For additional relation rows, we don't want to render an expandable relation cell,
+   * but instead we render the relation label.
+   * @param workPackage
+   * @param column
+   * @return {any}
+   */
+  public buildCell(workPackage:WorkPackageResourceInterface, column:QueryColumn):HTMLElement {
+
+    // handle relation types
+    if (isRelationColumn(column)) {
+      return this.emptyRelationCell(column);
+    }
+
+    return super.buildCell(workPackage, column);
+  }
+
+  /**
    * Build the columns on the given empty row
    */
-  public buildEmptyRelationRow(from:WorkPackageResourceInterface, relation:RelationResource, type:RelationColumnType):[HTMLElement,WorkPackageResourceInterface] {
+  public buildEmptyRelationRow(from:WorkPackageResourceInterface, relation:RelationResource, type:RelationColumnType):[HTMLElement, WorkPackageResourceInterface] {
     const denormalized = relation.denormalized(from);
 
     const to = this.states.workPackages.get(denormalized.targetId).value! as WorkPackageResourceInterface;
@@ -56,7 +72,7 @@ export class RelationRowBuilder extends SingleRowBuilder {
    */
   public createEmptyRelationRow(from:WorkPackageResource, to:WorkPackageResource) {
     let tr = document.createElement('tr');
-    tr.dataset['workPackageId'] = from.id;
+    tr.dataset['workPackageId'] = to.id;
     tr.dataset['relatedWorkPackageId'] = from.id;
     tr.classList.add(
       rowClassName, commonRowClassName, 'issue',
@@ -64,5 +80,41 @@ export class RelationRowBuilder extends SingleRowBuilder {
     );
 
     return tr;
+  }
+
+  /**
+   *
+   * @param from
+   * @param denormalized
+   * @param type
+   */
+  public appendRelationLabel(jRow:JQuery, from:WorkPackageResourceInterface, relation:RelationResource, type:RelationColumnType) {
+    const denormalized = relation.denormalized(from);
+    let typeLabel;
+
+    // Add the relation label if this is a "Relations for <WP Type>" column
+    if (type === 'toType') {
+      typeLabel = this.I18n.t(`js.relation_labels.${denormalized.reverseRelationType}`);
+    }
+    // Add the WP type label if this is a "<Relation Type> Relations" column
+    if (type === 'ofType') {
+      const wp = this.states.workPackages.get(denormalized.target.id).value!;
+      typeLabel = wp.type.name;
+    }
+
+    const relationLabel = document.createElement('span');
+    relationLabel.classList.add('relation-row--type-label');
+    relationLabel.textContent = typeLabel;
+
+    const textNode = document.createTextNode(denormalized.target.name);
+
+    jRow.find(`.${relationCellClassName}`).empty().append(relationLabel);
+  }
+
+  protected emptyRelationCell(column:QueryColumn) {
+    const cell = document.createElement('td');
+    cell.classList.add(relationCellClassName, wpCellTdClassName, column.id);
+
+    return cell;
   }
 }

@@ -11,17 +11,17 @@ import {WorkPackageTableSelection} from '../wp-fast-table/state/wp-table-selecti
 import {WorkPackageTableColumnsService} from '../wp-fast-table/state/wp-table-columns.service';
 import {
   internalDetailsColumn,
-  rowClassName
+  rowClassName,
+  SingleRowBuilder
 } from '../wp-fast-table/builders/rows/single-row-builder';
 import {WorkPackageTable} from '../wp-fast-table/wp-fast-table';
-import {RowRefreshBuilder} from '../wp-fast-table/builders/rows/row-refresh-builder';
-import IScope = angular.IScope;
 import {QueryColumn} from '../wp-query/query-column';
+import IScope = angular.IScope;
 
 export const inlineCreateRowClassName = 'wp-inline-create-row';
 export const inlineCreateCancelClassName = 'wp-table--cancel-create-link';
 
-export class InlineCreateRowBuilder extends RowRefreshBuilder {
+export class InlineCreateRowBuilder extends SingleRowBuilder {
   // Injections
   public states:States;
   public wpTableSelection:WorkPackageTableSelection;
