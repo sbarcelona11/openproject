@@ -3,7 +3,7 @@ import {
   WorkPackageResourceInterface
 } from '../../../api/api-v3/hal-resources/work-package-resource.service';
 import {WorkPackageTable} from '../../wp-fast-table';
-import {tableRowClassName, SingleRowBuilder} from '../rows/single-row-builder';
+import {tableRowClassName, SingleRowBuilder, commonRowClassName} from '../rows/single-row-builder';
 import {
   DenormalizedRelationData,
   RelationResource
@@ -71,13 +71,16 @@ export class RelationRowBuilder extends SingleRowBuilder {
    * @returns {any}
    */
   public createEmptyRelationRow(from:WorkPackageResource, to:WorkPackageResource) {
+    const identifier = this.relationClassIdentifier(from, to);
     let tr = document.createElement('tr');
     tr.dataset['workPackageId'] = to.id;
-    tr.dataset['relatedWorkPackageId'] = from.id;
+    tr.dataset['classIdentifier'] = identifier;
+
     tr.classList.add(
-      tableRowClassName, 'issue',
+      commonRowClassName, tableRowClassName, 'issue',
       `wp-table--relations-aditional-row`,
-      this.relationClassIdentifier(from, to),
+      identifier,
+      `${identifier}-table`,
       relationGroupClass(from.id)
     );
 

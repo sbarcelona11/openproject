@@ -15,6 +15,8 @@ import {WorkPackageEditForm} from '../../../wp-edit-form/work-package-edit-form'
 
 // Work package table row entries
 export const tableRowClassName = 'wp-table--row';
+// Work package and timeline rows
+export const commonRowClassName = 'wp--row';
 
 export const internalDetailsColumn = {
   id: '__internal-detailsLink'
@@ -83,12 +85,15 @@ export class SingleRowBuilder {
    * @returns {any}
    */
   public createEmptyRow(workPackage:WorkPackageResource) {
+    const identifier = this.classIdentifier(workPackage);
     let tr = document.createElement('tr');
     tr.dataset['workPackageId'] = workPackage.id;
+    tr.dataset['classIdentifier'] = identifier;
     tr.classList.add(
       tableRowClassName,
-      this.classIdentifier(workPackage),
-      `${this.classIdentifier(workPackage)}-table`,
+      commonRowClassName,
+      identifier,
+      `${identifier}-table`,
       'issue'
     );
 

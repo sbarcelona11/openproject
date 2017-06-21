@@ -12,7 +12,7 @@ import {WorkPackageTableColumnsService} from '../wp-fast-table/state/wp-table-co
 import {
   internalDetailsColumn,
   tableRowClassName,
-  SingleRowBuilder
+  SingleRowBuilder, commonRowClassName
 } from '../wp-fast-table/builders/rows/single-row-builder';
 import {WorkPackageTable} from '../wp-fast-table/wp-fast-table';
 import {QueryColumn} from '../wp-query/query-column';
@@ -53,7 +53,7 @@ export class InlineCreateRowBuilder extends SingleRowBuilder {
     const [row, hidden] = this.buildEmpty(workPackage);
 
     // Set editing context to table
-    form.editContext = new TableRowEditContext(workPackage.id);
+    form.editContext = new TableRowEditContext(workPackage.id, this.classIdentifier(workPackage));
     this.states.editing.get(workPackage.id).putValue(form);
 
     return [row, hidden];
@@ -65,10 +65,16 @@ export class InlineCreateRowBuilder extends SingleRowBuilder {
    * @returns {any}
    */
   public createEmptyRow(workPackage:WorkPackageResource) {
+    const identifier = this.classIdentifier(workPackage);
     const tr = document.createElement('tr');
     tr.id = rowId(workPackage.id);
     tr.dataset['workPackageId'] = workPackage.id;
-    tr.classList.add(inlineCreateRowClassName, tableRowClassName, 'wp--row', 'issue');
+    tr.dataset['classIdentifier'] = identifier;
+    tr.classList.add(
+      inlineCreateRowClassName, commonRowClassName, tableRowClassName, 'issue',
+      identifier,
+      `${identifier}-table`
+    );
 
     return tr;
   }

@@ -47,7 +47,10 @@ export class EditCellHandler extends ClickOrEnterHandler implements TableEventHa
 
     // Locate the row
     const rowElement = target.closest(`.${tableRowClassName}`);
+    // Get the work package we're editing
     const workPackageId = rowElement.data('workPackageId');
+    // Get the row context
+    const classIdentifier = rowElement.data('classIdentifier');
 
     // Get any existing edit state for this work package
     let state = this.editState(workPackageId);
@@ -57,7 +60,7 @@ export class EditCellHandler extends ClickOrEnterHandler implements TableEventHa
     const positionOffset = this.getClickPosition(evt);
 
     // Set editing context to table
-    form.editContext = new TableRowEditContext(workPackageId);
+    form.editContext = new TableRowEditContext(workPackageId, classIdentifier);
 
     // Activate the field
     form.activate(fieldName)

@@ -3,6 +3,7 @@ import {$injectFields} from '../../../angular/angular-injector-bridge.functions'
 import {States} from '../../../states.service';
 import {WorkPackageTableTimelineService} from '../../state/wp-table-timeline.service';
 import {WorkPackageCacheService} from '../../../work-packages/work-package-cache.service';
+import {commonRowClassName} from '../rows/single-row-builder';
 
 export const timelineCellClassName = 'wp-timeline-cell';
 
@@ -17,7 +18,7 @@ export class TimelineRowBuilder {
 
   public build(workPackageId:string|null) {
     const cell = document.createElement('div');
-    cell.classList.add(timelineCellClassName);
+    cell.classList.add(timelineCellClassName, commonRowClassName);
 
     if (workPackageId) {
       cell.dataset['workPackageId'] = workPackageId;
