@@ -105,14 +105,12 @@ export class WorkPackageTimelineCellsRenderer {
         return;
       }
 
-      // Get the associated work package id
-      const workPackage = state.value!;
       // As work packages may occur several times, get the unique identifier
       // to identify the cell
       const identifier = renderedRow.classIdentifier;
 
       // Create a cell unless we already have an active cell
-      if (!this.hasCell(identifier)) {
+      if (!this.cells[identifier]) {
         this.cells[identifier] = this.buildCell(identifier, wpId.toString());
       }
 

@@ -38,7 +38,6 @@ import {
 import {WorkPackageTimelineTableController} from '../container/wp-timeline-container.directive';
 import {timelineElementCssClass, TimelineViewParameters} from '../wp-timeline';
 import {TimelineRelationElement, workPackagePrefix} from './timeline-relation-element';
-import Moment = moment.Moment;
 import {WorkPackageTimelineCell} from '../cells/wp-timeline-cell';
 
 const DEBUG_DRAW_RELATION_LINES_WITH_COLOR = false;
