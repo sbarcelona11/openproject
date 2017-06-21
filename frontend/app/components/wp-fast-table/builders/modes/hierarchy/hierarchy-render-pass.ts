@@ -8,11 +8,10 @@ import {
   hierarchyGroupClass,
   hierarchyRootClass
 } from '../../../helpers/wp-table-hierarchy-helpers';
-import {PrimaryRenderPass, RowRenderInfo} from '../../primary-render-pass';
+import {PrimaryRenderPass} from '../../primary-render-pass';
 import {States} from '../../../../states.service';
 import {$injectFields} from '../../../../angular/angular-injector-bridge.functions';
 import {WorkPackageTableHierarchies} from '../../../wp-table-hierarchies';
-import {rowClass} from '../../../helpers/wp-table-row-helpers';
 
 export class HierarchyRenderPass extends PrimaryRenderPass {
   public states:States;
@@ -182,7 +181,7 @@ export class HierarchyRenderPass extends PrimaryRenderPass {
   private markRendered(workPackage:WorkPackageResourceInterface, hidden:boolean = false, isAncestor:boolean) {
     this.rendered[workPackage.id] = true;
     this.renderedOrder.push({
-      classIdentifier: isAncestor ? ancestorClassIdentifier(workPackage.id) : rowClass(workPackage.id),
+      classIdentifier: isAncestor ? ancestorClassIdentifier(workPackage.id) : this.rowBuilder.classIdentifier(workPackage),
       additionalClasses: this.ancestorClasses(workPackage),
       workPackage: isAncestor ? null : workPackage,
       renderType: 'primary',
@@ -226,7 +225,7 @@ export class HierarchyRenderPass extends PrimaryRenderPass {
       el,
       `${hierarchyRoot},${hierarchyGroup}`,
       {
-        classIdentifier: isAncestor ? ancestorClassIdentifier(workPackage.id) : rowClass(workPackage.id),
+        classIdentifier: isAncestor ? ancestorClassIdentifier(workPackage.id) : this.rowBuilder.classIdentifier(workPackage),
         workPackage: isAncestor ? null : workPackage,
         additionalClasses: this.ancestorClasses(workPackage),
         renderType: 'primary',

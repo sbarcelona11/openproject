@@ -4,7 +4,7 @@ import {WorkPackageTable} from '../../wp-fast-table';
 import {States} from '../../../states.service';
 import {TableEventHandler} from '../table-handler-registry';
 import {WorkPackageTableSelection} from '../../state/wp-table-selection.service';
-import {rowClassName} from '../../builders/rows/single-row-builder';
+import {tableRowClassName} from '../../builders/rows/single-row-builder';
 import {tdClassName} from '../../builders/cell-builder';
 
 export class RowClickHandler implements TableEventHandler {
@@ -21,7 +21,7 @@ export class RowClickHandler implements TableEventHandler {
   }
 
   public get SELECTOR() {
-    return `.${rowClassName}`;
+    return `.${tableRowClassName}`;
   }
 
   public eventScope(table:WorkPackageTable) {

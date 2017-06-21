@@ -1,17 +1,10 @@
 import {WorkPackageTable} from '../../wp-fast-table';
 import {$injectFields} from '../../../angular/angular-injector-bridge.functions';
-import {WorkPackageResourceInterface} from '../../../api/api-v3/hal-resources/work-package-resource.service';
 import {States} from '../../../states.service';
 import {WorkPackageTableTimelineService} from '../../state/wp-table-timeline.service';
 import {WorkPackageCacheService} from '../../../work-packages/work-package-cache.service';
-import {commonRowClassName} from '../rows/single-row-builder';
-import {rowClass} from '../../helpers/wp-table-row-helpers';
 
 export const timelineCellClassName = 'wp-timeline-cell';
-
-export function timelineRowIdentifier(id:string) {
-  return `wp-timeline-row-${id}`;
-}
 
 export class TimelineRowBuilder {
   public states:States;
@@ -24,11 +17,10 @@ export class TimelineRowBuilder {
 
   public build(workPackageId:string|null) {
     const cell = document.createElement('div');
-    cell.classList.add(timelineCellClassName, commonRowClassName);
+    cell.classList.add(timelineCellClassName);
 
     if (workPackageId) {
       cell.dataset['workPackageId'] = workPackageId;
-      cell.classList.add(timelineRowIdentifier(workPackageId));
     }
 
     return cell;

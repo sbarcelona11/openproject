@@ -39,8 +39,6 @@ import IScope = angular.IScope;
 import Moment = moment.Moment;
 import {WorkPackageTableRefreshService} from "../../wp-table-refresh-request.service";
 import {LoadingIndicatorService} from '../../../common/loading-indicator/loading-indicator.service';
-import {timelineRowIdentifier} from "../../../wp-fast-table/builders/timeline/timeline-row-builder";
-
 export class WorkPackageTimelineCell {
   public wpCacheService:WorkPackageCacheService;
   public wpTableRefresh:WorkPackageTableRefreshService;

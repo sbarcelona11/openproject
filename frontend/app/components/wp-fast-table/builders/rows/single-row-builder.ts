@@ -14,9 +14,7 @@ import {RelationCellbuilder} from '../relation-cell-builder';
 import {WorkPackageEditForm} from '../../../wp-edit-form/work-package-edit-form';
 
 // Work package table row entries
-export const rowClassName = 'wp-table--row';
-// Class name for both table and timeline rows
-export const commonRowClassName = 'wp--row';
+export const tableRowClassName = 'wp-table--row';
 
 export const internalDetailsColumn = {
   id: '__internal-detailsLink'
@@ -87,16 +85,18 @@ export class SingleRowBuilder {
   public createEmptyRow(workPackage:WorkPackageResource) {
     let tr = document.createElement('tr');
     tr.dataset['workPackageId'] = workPackage.id;
-    tr.classList.add(rowClassName,
-      commonRowClassName,
+    tr.classList.add(
+      tableRowClassName,
       this.classIdentifier(workPackage),
-      'issue');
+      `${this.classIdentifier(workPackage)}-table`,
+      'issue'
+    );
 
     return tr;
   }
 
   public classIdentifier(workPackage:WorkPackageResource) {
-    return `${commonRowClassName}-${workPackage.id}`;
+    return `wp-row-${workPackage.id}`;
   }
 
   /**

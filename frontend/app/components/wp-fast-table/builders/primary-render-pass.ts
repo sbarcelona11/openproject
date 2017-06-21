@@ -2,12 +2,10 @@ import {States} from '../../states.service';
 import {WorkPackageTable} from '../wp-fast-table';
 import {WorkPackageResourceInterface} from '../../api/api-v3/hal-resources/work-package-resource.service';
 import {$injectFields} from '../../angular/angular-injector-bridge.functions';
-import {rowClass} from '../helpers/wp-table-row-helpers';
 import {TimelineRenderPass} from './timeline/timeline-render-pass';
 import {SingleRowBuilder} from './rows/single-row-builder';
 import {RelationRenderInfo, RelationsRenderPass} from './relations/relations-render-pass';
 import {timeOutput} from '../../../helpers/debug_output';
-import {WorkPackageEditForm} from '../../wp-edit-form/work-package-edit-form';
 
 export type RenderedRowType = 'primary' | 'relations';
 
@@ -163,7 +161,7 @@ export abstract class PrimaryRenderPass {
     this.tableBody.appendChild(row);
 
     this.renderedOrder.push({
-      classIdentifier: rowClass(workPackage.id),
+      classIdentifier: this.rowBuilder.classIdentifier(workPackage),
       additionalClasses: additionalClasses,
       workPackage: workPackage,
       renderType: 'primary',

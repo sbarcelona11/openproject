@@ -11,7 +11,7 @@ import {WorkPackageTableSelection} from '../wp-fast-table/state/wp-table-selecti
 import {WorkPackageTableColumnsService} from '../wp-fast-table/state/wp-table-columns.service';
 import {
   internalDetailsColumn,
-  rowClassName,
+  tableRowClassName,
   SingleRowBuilder
 } from '../wp-fast-table/builders/rows/single-row-builder';
 import {WorkPackageTable} from '../wp-fast-table/wp-fast-table';
@@ -68,7 +68,7 @@ export class InlineCreateRowBuilder extends SingleRowBuilder {
     const tr = document.createElement('tr');
     tr.id = rowId(workPackage.id);
     tr.dataset['workPackageId'] = workPackage.id;
-    tr.classList.add(inlineCreateRowClassName, rowClassName, 'wp--row', 'issue');
+    tr.classList.add(inlineCreateRowClassName, tableRowClassName, 'wp--row', 'issue');
 
     return tr;
   }
