@@ -198,8 +198,8 @@ export class WorkPackageInlineCreateController {
     this.currentWorkPackage = null;
     this.states.editing.get('new').clear();
     this.states.workPackages.get('new').clear();
-    this.$element.find('#wp-row-new').remove();
-    jQuery(this.table.timelineBody).find('#wp-timeline-row-new').remove();
+    this.$element.find('.wp-row-new').remove();
+    jQuery(this.table.timelineBody).find('.wp-row-new-timeline').remove();
   }
 
   public showRow() {

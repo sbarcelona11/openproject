@@ -43,7 +43,7 @@ export class SelectionTransformer {
     jQuery(`.${tableRowClassName}.${checkedClassName}`).removeClass(checkedClassName);
 
     _.each(state.selected, (selected: boolean, workPackageId:any) => {
-      jQuery(`#${rowId(workPackageId)}`).toggleClass(checkedClassName, selected);
+      jQuery(`.${tableRowClassName}[data-work-package-id="${workPackageId}"]`).toggleClass(checkedClassName, selected);
     });
   }
 }
